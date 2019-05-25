@@ -17,7 +17,7 @@ private:
 	bool SaveCapitalFlow(int k, double money = 0); //保存流水在文件中
 public:
 	void menu(); //卡片菜单
-	bool IsCredit(); //是否信用卡
+	int IsCard(); //是否信用卡
 	void SetCard(double balance, string cardid, string pass, int day = 11); //卡片初始化
 	double GetBalance(); //返回信用额度
 	

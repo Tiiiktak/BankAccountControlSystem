@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <ctime>
 using namespace std; 
 
 //存折,基础账户
@@ -7,6 +8,7 @@ class CAccount
 {
 protected:
 	bool m_accountsec; //账户安全状态
+	time_t m_opendate; //开户时间  
 	double m_balance; //账户余额
 	string m_adnumber; //账号16位
 	string m_password; //账号密码6位
@@ -21,7 +23,7 @@ public:
 	virtual void menu(); //卡片菜单
 	string NumberBack(); //返回账户账号后四位数字
 	virtual double GetBalance(); //返回账户余额
-	virtual bool IsCredit(); //是否是信用卡
+	virtual int IsCard(); //卡种0-存折，1-信用卡，2-借记卡
 	virtual void SetCard(double balance, string cardid, string pass, int day = 11); //卡片初始化
 	
 	CAccount();

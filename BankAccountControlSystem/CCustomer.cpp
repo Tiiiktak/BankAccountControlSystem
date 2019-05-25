@@ -29,7 +29,7 @@ void CCustomer::reFresh()
 	int credflag = 0; 
 	for (int i = 0; i < m_accounts.size(); i++)
 	{
-		if (m_accounts[i]->IsCredit())
+		if (m_accounts[i]->IsCard() == 1)
 		{
 			creass += m_accounts[i]->GetBalance();
 			credflag = 1; 
@@ -104,10 +104,12 @@ void CCustomer::ShowCards()
 	{
 		cout << "\t" << i + 1 << ". ";
 		CAccount* p = m_accounts[i];
-		if (p->IsCredit())
-			cout << "Credit ";
+		if (p->IsCard() == 1)
+			cout << "Credit   ";
+		else if (p->IsCard() == 2)
+			cout << "Debit    ";
 		else
-			cout << "Debit  "; 
+			cout << "PassBook "; 
 		cout << m_accounts[i]->NumberBack();
 		cout << setfill(' ') << setw(10) << m_accounts[i]->GetBalance(); 
 		cout << "yuan" << endl; 
@@ -116,7 +118,7 @@ void CCustomer::ShowCards()
 	cout << "\t>>>"; 
 	int ch; 
 	cin >> ch; 
-	if (ch > 0 && ch < m_accounts.size())
+	if (ch > 0 && ch <= m_accounts.size())
 		m_accounts[ch - 1]->menu();
 	else
 		cout << "\tERROR!Please Try again" << endl;
@@ -136,7 +138,7 @@ void CCustomer::NewAccount(CAccount* ac)
 {
 	m_accounts.push_back(ac);
 	m_cards++; 
-	if (ac->IsCredit())
+	if (ac->IsCard() == 1)
 	{
 		m_havecredit = true;
 		m_creditassets += ac->GetBalance(); 

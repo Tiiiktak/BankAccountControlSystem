@@ -6,9 +6,9 @@
 using namespace std; 
 
 //是否是信用卡
-bool CCreditAccount::IsCredit()
+int CCreditAccount::IsCard()
 {
-	return true;
+	return 1; 
 }
 
 //卡片初始化
@@ -233,7 +233,12 @@ bool CCreditAccount::SaveCapitalFlow(int k, double money)
 	string filename = m_adnumber + ".txt";
 	ofstream otfl; 
 	if (k == 0)
+	{
+		ifstream infl(filename);
+		infl >> m_opendate;
+		infl.close();
 		otfl.open(filename);
+	}
 	else
 		otfl.open(filename, ios::app); 
 	if (otfl.fail())
@@ -278,7 +283,6 @@ CCreditAccount::CCreditAccount()
 {
 	m_accountsec = true;
 	m_balance = 0;
-	m_creditbalance = 0.01; 
-	m_creditlimit = 0.01; 
-	m_repaydate = 11; 
+	m_creditbalance = m_creditlimit = m_maxlimit = 0.01; 
+	m_repaydate = 11;
 }

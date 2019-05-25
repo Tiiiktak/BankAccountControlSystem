@@ -183,7 +183,12 @@ bool CAccount::SaveCapitalFlow(int k, double money)
 	string filename = m_adnumber + ".txt";
 	ofstream otfl; 
 	if (k == 0)
+	{
+		ifstream infl(filename); 
+		infl >> m_opendate; 
+		infl.close(); 
 		otfl.open(filename);
+	}
 	else
 		otfl.open(filename, ios::app); 
 
@@ -265,9 +270,9 @@ void CAccount::Back2Menu(int k)
 }
 
 //不是信用卡
-bool CAccount::IsCredit()
+int CAccount::IsCard()
 {
-	return false;
+	return 0; 
 }
 
 

@@ -1,9 +1,14 @@
 #include "CAccount.h"
 #include <Windows.h>
+#include <cstdio>
+#include <ctime>
+#include <iomanip>
 #include <iostream>
+#include <fstream>
 using namespace std;
 
-bool CAccount::CheckPassword() //密码核对
+//密码核对
+bool CAccount::CheckPassword() 
 {
 	string pass;
 	int f = 0, flag = 1; 
@@ -28,17 +33,25 @@ bool CAccount::CheckPassword() //密码核对
 	return true; 
 }
 
+//账户初始化
+void CAccount::SetCard(double balance, string cardid, string pass, int day)
+{
+	m_balance = balance; 
+	m_password = pass; 
+	m_adnumber = cardid; 
+	SaveCapitalFlow(0); 
+}
+
+//卡片菜单
 void CAccount::menu()
 {
 	int ch;
 	while (1)
 	{
 		system("cls"); 
-		cout << "\t=====Passbook Account=====" << endl;
-		cout << "\tTail number : ";
-		for (int i = 0; i < 4; i++)
-			cout << NumberBack()[i];
-		cout << "\n\t1.Deposit        2.Withdrawl" << endl;
+		cout << "\t =====Passbook Account=====" << endl;
+		cout << "\tTail number : " << NumberBack() << endl; 
+		cout << "\t1.Deposit        2.Withdrawl" << endl;
 		cout << "\t3.Balance        4.Bill" << endl;
 		cout << "\t0.Back" << endl;
 		cout << "\t>>>"; 
@@ -46,7 +59,7 @@ void CAccount::menu()
 		switch (ch)
 		{
 		case 0:
-		case 4:
+			Back2Menu(0); 
 			return;
 		case 1:
 			Deposit(); 
@@ -57,11 +70,15 @@ void CAccount::menu()
 		case 3:
 			ShowBalance(1); 
 			break; 
+		case 4:
+			PrintCapitalFlow(); 
+			break;
 		}
 	}
 }
 
-bool CAccount::Deposit() //存钱
+//存钱
+bool CAccount::Deposit() 
 {
 	system("cls");
 	double moneyoin;
@@ -76,13 +93,20 @@ bool CAccount::Deposit() //存钱
 		return false; 
 	}
 	m_balance += moneyoin; 
+	SaveCapitalFlow(1, moneyoin);
 	cout << "\t\tDeposit successfully" << endl; 
 	ShowBalance(0); 
-	Back2Menu(0); 
+	cout << "\tSee Bill?(y/n) "; 
+	cin >> ch; 
+	if (ch == 'y' || ch == 'Y')
+		PrintCapitalFlow(); 
+	else
+		Back2Menu(0); 
 	return true;
 }
 
-bool CAccount::Withdrawal() //取钱
+//取钱
+bool CAccount::Withdrawal() 
 {
 	system("cls");
 	double moneyout; 
@@ -106,9 +130,15 @@ bool CAccount::Withdrawal() //取钱
 	if (CheckPassword()) //核对密码
 	{
 		m_balance -= moneyout; 
+		SaveCapitalFlow(2, moneyout);
 		cout << "\t\tSuccessful transaction" << endl; 
-		ShowBalance(0); 
-		Back2Menu(0); 
+		ShowBalance(0);
+		cout << "\tSee Bill?(y/n) ";
+		cin >> ch;
+		if (ch == 'y' || ch == 'Y')
+			PrintCapitalFlow();
+		else
+			Back2Menu(0); 
 		return true; 
 	}
 	else //密码错误
@@ -122,24 +152,102 @@ bool CAccount::Withdrawal() //取钱
 	}
 }
 
-void CAccount::ShowBalance(int k) //查余额
+//查询并显示余额
+void CAccount::ShowBalance(int k) 
 {
-	if (k)
+	if (k) //若k非零,先清屏,之后返回菜单
 		system("cls"); 
 	cout << "\tAccount Balance :  " << m_balance << " yuan" << endl; 
 	if (k)
-		Back2Menu(0); 
+		Back2Menu(0);  
 }
 
-int* CAccount::NumberBack() //卡号后四位
+//返回余额
+double CAccount::GetBalance()
 {
-	int arr[4]; 
+	return m_balance;
+}
+
+//卡号后四位
+string CAccount::NumberBack() 
+{
+	string arr;
 	for (int i = 12; i < 16; i++)
-		arr[i - 12] = m_adnumber[i]-'0'; 
+		arr += m_adnumber[i]; 
 	return arr;
 }
 
-void CAccount::Back2Menu(int k) //回菜单
+//保存流水
+bool CAccount::SaveCapitalFlow(int k, double money)
+{
+	string filename = m_adnumber + ".txt";
+	ofstream otfl; 
+	if (k == 0)
+		otfl.open(filename);
+	else
+		otfl.open(filename, ios::app); 
+
+	if (otfl.fail())
+	{
+		cout << "\tERROR! fail to open file \"" << filename << "\"" << endl;
+		return false;
+	}
+	time_t now = time(0); 
+	tm* ltm = localtime(&now);
+	if (k == 0)
+	{
+		otfl << "Passbook  " << m_adnumber << endl;
+		otfl << setfill(' ') << setw(8) << "date" << setfill(' ') << setw(10) << "in";
+		otfl << setfill(' ') << setw(10) << "out" << setfill(' ') << setw(10) << "Balance" << endl;
+	}
+	//时间
+	otfl << 1900 + ltm->tm_year << setfill('0') << setw(2) << 1 + ltm->tm_mon << setfill('0') << setw(2) << ltm->tm_mday;
+	if (k == 0) //初始化
+	{
+		otfl << setfill(' ') << setw(10) << m_balance << "          ";
+	}
+	else if (k == 1) //存入
+	{
+		otfl << setfill(' ') << setw(10) << money << "          ";
+	}
+	else //取出
+	{
+		otfl << "          " << setfill(' ') << setw(10) << -1 * money;
+	}
+	otfl << setfill(' ') << setw(10) << m_balance << endl;
+	otfl.close(); 
+
+	return true;
+}
+
+//打印流水
+bool CAccount::PrintCapitalFlow() 
+{
+	system("cls"); 
+	string filename = m_adnumber + ".txt";
+	ifstream infl(filename); 
+	if (infl.fail())
+	{
+		cout << "\tERROR! fail to open file \"" << filename << "\"" << endl;
+		return false;	
+	}
+	cout << "\t\t=====BILL=====" << endl; 
+	string str; 
+	while (!infl.eof())
+	{
+		getline(infl, str);
+		cout << "\t" << str << endl; 
+	}
+	infl.close(); 
+	cout << "\tEnter any key to back. "; 
+	char ch; 
+	cin >> ch; 
+	Back2Menu(0); 
+	return true;
+}
+
+//回菜单
+void CAccount::Back2Menu(int k) 
 {
 	if (k)
 		system("cls"); 
@@ -156,12 +264,17 @@ void CAccount::Back2Menu(int k) //回菜单
 	}
 }
 
+//不是信用卡
+bool CAccount::IsCredit()
+{
+	return false;
+}
+
+
 CAccount::CAccount()
 {
 	m_accountsec = true; 
-	m_adnumber = "6220190507883625"; 
-	m_balance = 235.4; 
-	m_password = "123456"; 
+	m_balance = 0; 
 }
 
 

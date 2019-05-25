@@ -21,10 +21,37 @@
     <ClCompile Include="CAccount.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="CCreditAccount.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CDebitAccount.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CBankAdmin.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CCustomer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CAccount.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="CCreditAccount.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CDebitAccount.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CBankAdmin.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CCustomer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

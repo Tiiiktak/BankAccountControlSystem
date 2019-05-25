@@ -25,7 +25,8 @@ bool CDebitAccount::SaveCapitalFlow(int k, double money)
 	tm* ltm = localtime(&now);
 	if (k == 0)
 	{
-		otfl << "Passbook  " << m_adnumber << endl;
+		otfl << m_opendate << endl; 
+		otfl << "Debit  " << m_adnumber << endl;
 		otfl << setfill(' ') << setw(8) << "date" << setfill(' ') << setw(10) << "in";
 		otfl << setfill(' ') << setw(10) << "out" << setfill(' ') << setw(10) << "Balance" << endl;
 	}
@@ -45,7 +46,7 @@ bool CDebitAccount::SaveCapitalFlow(int k, double money)
 	}
 	else //利息取出
 	{
-		otfl << setfill(' ') << setw(10) << "insterest" << money; 
+		otfl << setfill(' ') << setw(10) << "insterest" << setfill(' ') << setw(10) << money;
 	}
 	otfl << setfill(' ') << setw(10) << m_balance << endl;
 	otfl.close();
@@ -53,6 +54,7 @@ bool CDebitAccount::SaveCapitalFlow(int k, double money)
 	return true;
 }
 
+//卡种
 int CDebitAccount::IsCard()
 {
 	return 2; 
@@ -103,7 +105,7 @@ void CDebitAccount::Interest()
 	system("cls"); 
 	time_t now = time(NULL); 
 
-	int days = difftime(m_opendate, now) / 86400;
+	int days = difftime(now, m_opendate) / 86400;
 	cout << "\t ====Financial management====" << endl;
 	ShowBalance(0); 
 	cout << "\tAnnualized interest rate: " << m_rate * 100 << "%" << endl;
@@ -113,7 +115,7 @@ void CDebitAccount::Interest()
 	m_insterest = (double)(((int)(ins * 100)) / 100);
 	cout << "\tinterest receivable: " << m_insterest << "yuan" << endl;
 	cout << "\tExtracted to balance?(y/n)"; 
-	cout << ">>>";
+	cout << "\n\t>>>";
 	char key; 
 	cin >> key; 
 	if (key == 'y' || key == 'Y')
@@ -124,11 +126,13 @@ void CDebitAccount::Interest()
 			m_balance += m_insterest;
 			SaveCapitalFlow(3, m_insterest);
 			m_insterest = 0;
+			m_opendate = now; 
+			EditOpendate(); 
 			ShowBalance(0); 
 			Back2Menu(0); 
 		}
-	}
-	Back2Menu(0); 
+	}else
+		Back2Menu(0); 
 }
 
 CDebitAccount::CDebitAccount()

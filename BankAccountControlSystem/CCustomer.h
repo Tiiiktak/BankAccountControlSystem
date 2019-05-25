@@ -5,6 +5,7 @@
 #include <vector>
 using namespace std; 
 
+//客户
 class CCustomer
 {	
 private:
@@ -26,6 +27,9 @@ public:
 	void menu(); //客户个人管理界面
 	void NewAccount(CAccount* ac); //创建新卡片
 	string GetName(); //返回客户姓名
+	string GetId(); 
+	string Getmobil(); 
+	void ReFreshfile(int k); 
 	double GetCreditAssets(); //返回授信额度
 	void SetCustomer(string name, string id, string phone); //客户初始化
 

@@ -20,7 +20,7 @@ public:
 	int IsCard(); //是否信用卡
 	void SetCard(double balance, string cardid, string pass, int day = 11); //卡片初始化
 	double GetBalance(); //返回信用额度
-	
+	void initial(double balance, string cardid, string pass); 
 	CCreditAccount(); 
 };
 

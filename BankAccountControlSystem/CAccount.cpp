@@ -1,5 +1,6 @@
 #include "CAccount.h"
 #include <Windows.h>
+#include <vector>
 #include <cstdio>
 #include <ctime>
 #include <iomanip>
@@ -39,6 +40,7 @@ void CAccount::SetCard(double balance, string cardid, string pass, int day)
 	m_balance = balance; 
 	m_password = pass; 
 	m_adnumber = cardid; 
+	m_opendate = time(NULL); 
 	SaveCapitalFlow(0); 
 }
 
@@ -177,6 +179,16 @@ string CAccount::NumberBack()
 	return arr;
 }
 
+string CAccount::GetId()
+{
+	return m_adnumber; 
+}
+
+string CAccount::GetPass()
+{
+	return m_password; 
+}
+
 //保存流水
 bool CAccount::SaveCapitalFlow(int k, double money)
 {
@@ -184,9 +196,6 @@ bool CAccount::SaveCapitalFlow(int k, double money)
 	ofstream otfl; 
 	if (k == 0)
 	{
-		ifstream infl(filename); 
-		infl >> m_opendate; 
-		infl.close(); 
 		otfl.open(filename);
 	}
 	else
@@ -201,6 +210,7 @@ bool CAccount::SaveCapitalFlow(int k, double money)
 	tm* ltm = localtime(&now);
 	if (k == 0)
 	{
+		otfl << m_opendate << endl; 
 		otfl << "Passbook  " << m_adnumber << endl;
 		otfl << setfill(' ') << setw(8) << "date" << setfill(' ') << setw(10) << "in";
 		otfl << setfill(' ') << setw(10) << "out" << setfill(' ') << setw(10) << "Balance" << endl;
@@ -267,6 +277,37 @@ void CAccount::Back2Menu(int k)
 			}
 		}
 	}
+}
+
+void CAccount::EditOpendate()
+{
+	string str, filename = m_adnumber + ".txt"; 
+	ifstream infl(filename); 
+	vector<string> tempstr; 
+	infl >> str; 
+	while (!infl.eof())
+	{
+		getline(infl, str);
+		tempstr.push_back(str); 
+	}
+	infl.close(); 
+	ofstream otfl(filename); 
+	otfl << m_opendate << endl;
+	for (int i = 0; i < tempstr.size(); i++)
+	{
+		otfl << tempstr[i] << endl; 
+	}
+	otfl.close(); 
+}
+
+void CAccount::initial(double balance, string cardid, string pass)
+{
+	m_adnumber = cardid; 
+	m_balance = balance; 
+	m_password = pass; 
+	string filename = m_adnumber + ".txt"; 
+	ifstream infl(filename); 
+	infl >> m_opendate; 
 }
 
 //不是信用卡

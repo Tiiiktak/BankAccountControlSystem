@@ -11,13 +11,14 @@ int CCreditAccount::IsCard()
 	return 1; 
 }
 
-//卡片初始化
+//新卡片初始化
 void CCreditAccount::SetCard(double balance, string cardid, string pass, int day) 
 {
 	m_creditbalance = m_creditlimit = m_maxlimit = balance; 
 	m_repaydate = day; 
 	m_password = pass; 
 	m_adnumber = cardid; 
+	m_opendate = time(NULL); 
 	SaveCapitalFlow(0); 
 }
 
@@ -180,6 +181,17 @@ double CCreditAccount::GetBalance()
 	return m_creditbalance + m_balance; 
 }
 
+//已有卡片初始化
+void CCreditAccount::initial(double balance, string cardid, string pass)
+{
+	m_adnumber = cardid;
+	m_creditbalance = m_creditlimit = m_maxlimit = balance; 
+	m_password = pass;
+	string filename = m_adnumber + ".txt";
+	ifstream infl(filename);
+	infl >> m_opendate >> m_repaydate;
+}
+
 //调额
 bool CCreditAccount::AdjustBalance() 
 {
@@ -234,9 +246,6 @@ bool CCreditAccount::SaveCapitalFlow(int k, double money)
 	ofstream otfl; 
 	if (k == 0)
 	{
-		ifstream infl(filename);
-		infl >> m_opendate;
-		infl.close();
 		otfl.open(filename);
 	}
 	else
@@ -250,6 +259,8 @@ bool CCreditAccount::SaveCapitalFlow(int k, double money)
 	tm* ltm = localtime(&now);
 	if (k == 0)
 	{
+		otfl << m_opendate << endl; //开卡时间
+		otfl << m_repaydate << endl; //还款日
 		otfl << "Credit  " << m_adnumber << endl;
 		otfl << setfill(' ') << setw(8) << "date" << setfill(' ') << setw(10) << "in";
 		otfl << setfill(' ') << setw(10) << "out" << setfill(' ') << setw(10) << "Total";

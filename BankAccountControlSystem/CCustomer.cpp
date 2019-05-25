@@ -1,6 +1,8 @@
 #include "CCustomer.h"
 #include <iostream>
 #include <iomanip>
+#include <cstring>
+#include <fstream>
 #include <Windows.h>
 using namespace std; 
 
@@ -84,6 +86,7 @@ void CCustomer::menu()
 //显示个人信息
 void CCustomer::ShowProfile()
 {
+	system("cls"); 
 	cout << "\t\t===ME===" << endl;
 	cout << "\tName:" << m_name << endl; 
 	cout << "\tID:" << m_id << endl;
@@ -97,7 +100,7 @@ void CCustomer::ShowProfile()
 //展示卡片
 void CCustomer::ShowCards()
 {
-	system("cls"); 
+	system("cls");
 	cout << "\tYou have " << m_accounts.size() << " cards" << endl;
 	cout << "\tHere are your cards" << endl;
 	for (int i = 0; i < m_accounts.size(); i++)
@@ -109,20 +112,22 @@ void CCustomer::ShowCards()
 		else if (p->IsCard() == 2)
 			cout << "Debit    ";
 		else
-			cout << "PassBook "; 
+			cout << "PassBook ";
 		cout << m_accounts[i]->NumberBack();
-		cout << setfill(' ') << setw(10) << m_accounts[i]->GetBalance(); 
-		cout << "yuan" << endl; 
+		cout << setfill(' ') << setw(10) << m_accounts[i]->GetBalance();
+		cout << "yuan" << endl;
 	}
-	cout << "\tEnter the card number you want to manage or 0 to back" << endl; 
-	cout << "\t>>>"; 
-	int ch; 
-	cin >> ch; 
+	cout << "\tEnter the card number you want to manage or 0 to back" << endl;
+	cout << "\t>>>";
+	int ch;
+	cin >> ch;
 	if (ch > 0 && ch <= m_accounts.size())
 		m_accounts[ch - 1]->menu();
 	else
+	{
 		cout << "\tERROR!Please Try again" << endl;
-	Back2Menu(0); 
+		Back2Menu(0);
+	}
 }
 
 //客户初始化
@@ -169,6 +174,52 @@ void CCustomer::ShowCreditAssets()
 std::string CCustomer::GetName()
 {
 	return m_name;
+}
+
+string CCustomer::GetId()
+{
+	return m_id; 
+}
+
+string CCustomer::Getmobil()
+{
+	return m_phone; 
+}
+
+void CCustomer::ReFreshfile(int k)
+{
+	string str; 
+	ifstream infl("customersini.txt");
+	vector<string> tempstr; 
+	int i = 0;
+	while (!infl.eof())
+	{
+		getline(infl, str); 
+		if (i == k && str[0] != m_accounts.size())
+		{
+			str.clear(); 
+			str += to_string(m_accounts.size()) + " ";
+			for (int j = 0; j < m_accounts.size(); j++)
+			{
+				str += to_string(m_accounts[j]->IsCard()) + " ";
+				str += m_accounts[j]->GetId() + " "; 
+				str += m_accounts[j]->GetPass() + " "; 
+				str += to_string(m_accounts[j]->GetBalance()) + " ";		
+			}
+		}
+		tempstr.push_back(str); 
+		i++; 
+	}
+	infl.close(); 
+
+	ofstream otfl("customersini.txt");
+	for (int i = 0; i < tempstr.size(); i++)
+	{
+		otfl << tempstr[i] << endl;
+	}
+	if (m_accounts.size() == 0)
+		otfl << 0;
+	otfl.close(); 
 }
 
 //返回额度

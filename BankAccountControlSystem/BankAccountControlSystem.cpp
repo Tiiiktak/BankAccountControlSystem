@@ -7,7 +7,6 @@ using namespace std;
 
 int main()
 {
-	cout << "hello world" << endl; 
 	CBankAdmin* admin = new CBankAdmin; 
 	
 	admin->starthere(); 
